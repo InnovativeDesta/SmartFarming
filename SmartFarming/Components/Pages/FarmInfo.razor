@@ -1,50 +1,55 @@
 ﻿@page "/"
 @inject GeolocationService GeolocationService
-@inject NavigationManager Navigation
+@inject NavigationManager Navigator
 @inject IJSRuntime JS
-
 @using Services
 
 <h4>Farm Information</h4>
-
 <div class="form-container">
+    <label>Start Date: </label>   <InputDate @bind-Value="StartDate" class="form-control" />
+    <label>End Date: </label>     <InputDate @bind-Value="EndDate" class="form-control" />
     <label for="vegetation">Vegetation Type:</label>
-    <select class="form-dropdown" @bind="farmDetails.VegetationType">
+    <select class="form-dropdown" @onchange="@GetLocation">
         <option value="Tomato">Tomato</option>
         <option value="Lettuce">Lettuce</option>
         <option value="Wheat">Wheat</option>
         <option value="Corn">Corn</option>
         <option value="Rice">Rice</option>
         <option value="Apple">Apple</option>
-    </select>
-    <br />
+    </select>    
     <div>
-        <button class="form-button" @onclick="GetLocation">Use Current Location</button>
+        <button class="form-button" @onclick="ShowMeteomaticsData">Analyze</button>
     </div>
 </div>
 
-
 <div>
     <p>Farm Location: @(farmDetails.Location ?? " not detected yet")</p>
-
-    <!-- The div where the map will be rendered -->
-    <div id="map"></div>
-
+    <div id="map"></div> 
 </div>
 
 @code {
     private FarmDetails farmDetails = new FarmDetails();
     private Xamarin.Essentials.Location location;
-     
-    protected override async Task OnAfterRenderAsync(bool firstRender=true)
+    public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(5);
+    public string FormattedDateRange { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender = true)
     {
-        await GetLocation();
+        farmDetails.VegetationType = "Tomato";
+        await GetCurrentLocation();
     }
 
-    private async Task GetLocation()
+    private async Task GetLocation(ChangeEventArgs e)
+    {
+        farmDetails.VegetationType = e.Value.ToString();
+        await GetCurrentLocation();
+    }
+
+    private async Task GetCurrentLocation()
     {
         location = await GeolocationService.GetLocationAsync();
-
+        GetFormattedDateRange();
         if (location != null)
         {
             farmDetails.Location = $"{location.Latitude}, {location.Longitude}";
@@ -62,4 +67,17 @@
         // Initialize the map with the provided latitude and longitude
         await JS.InvokeVoidAsync("initializeLeafletMap", location.Latitude, location.Longitude);
     }
+
+    private void ShowMeteomaticsData()
+    {
+        Navigator.NavigateTo($"/visualizer/{FormattedDateRange}/{location.Latitude}/{location.Longitude}");
+    }
+
+    // Method to calculate and format date range
+    private void GetFormattedDateRange()
+    {
+        TimeSpan duration = EndDate - StartDate;
+        FormattedDateRange = $"{StartDate.ToString("yyyy-MM-ddTHH:mm:ss")}ZP{duration.Days}D";
+    }
 }
+

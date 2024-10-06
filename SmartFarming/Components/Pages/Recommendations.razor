@@ -1,9 +1,12 @@
 ﻿@page "/recommendations"
 @inject GeolocationService GeolocationService
+@inject NavigationManager Navigator
 @inject SmartFarming.Services.Recommendation RecommendationService
 
+<div>
+    <button @onclick="GoBack">Back</button>
+</div>
 <h4>Recommendations</h4>
-
 <div class="form-container">
     <select class="form-dropdown" @onchange ="GetSimulatedRecommendations">
         <option value="Tomato">Tomato</option>
@@ -54,5 +57,10 @@
         simulatedFloodRisk = result.floodRisk;
         simulatedDroughtRisk = result.droughtRisk;
         recommendationMessage = result.message;
+    }
+
+    private void GoBack()
+    {
+        Navigator.NavigateTo("javascript:history.back()");
     }
 }

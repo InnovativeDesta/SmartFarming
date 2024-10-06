@@ -1,11 +1,12 @@
-﻿@page "/farm_visualizer"
+﻿@page "/visualizer/{daterange}/{latitude:double}/{longitude:double}"
 @inject IJSRuntime JS
 @inject SmartFarming.Services.MeteomaticsApiService MeteomaticsApiService
-
-<h3>Data Visualizer</h3>
+@inject NavigationManager Navigator
 
 <div>
-    <h4>Meteomatics Space Data</h4>
+    <h4>Meteomatics Space Data Analysis</h4>
+    <button class="form-button" @onclick="ShowRecommendedActions">Recommended Actions</button>
+
     @if (string.IsNullOrEmpty(weatherData))
     {
         <p>Loading visualization from Mateometics...</p>
@@ -17,8 +18,9 @@
 </div>
 
 @code {
-    [Parameter] public double latitude { get; set; } = 63.096;  // Vaasa's Latitude
-    [Parameter] public double longitude { get; set; } = 21.615; // Vaasa's Longitude
+    [Parameter] public string daterange { get; set; }
+    [Parameter] public double latitude { get; set; } = 63.096;  // NY's Latitude
+    [Parameter] public double longitude { get; set; } = 21.615; // NY's Longitude
 
     private string weatherData;
     string apiEndpoint;
@@ -26,10 +28,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        apiEndpoint = "https://api.meteomatics.com/2024-10-05T00:00:00ZP5D:PT1H/volumetric_soil_water_-5cm:m3m3,volumetric_soil_water_-15cm:m3m3,volumetric_soil_water_-50cm:m3m3,volumetric_soil_water_-150cm:m3m3/47.412164,9.340652/html?source=mix";
+    https://api.meteomatics.com/{startdate}--{enddate}/weather_variable/{lat},{lon}/json
+
+        apiEndpoint = $"https://api.meteomatics.com/{daterange}/volumetric_soil_water_-5cm:m3m3,volumetric_soil_water_-15cm:m3m3,volumetric_soil_water_-50cm:m3m3,volumetric_soil_water_-150cm:m3m3/{latitude},{longitude}/html?source=mix";
         // Call the Meteomatics API
         //https://api.meteomatics.com/{datetime}/t_2m:C/{lat},{lon}/json
         weatherData = await MeteomaticsApiService.GetWeatherDataAsync();
         iframeSrc = $"data:text/html;charset=utf-8,{Uri.EscapeDataString(weatherData)}";
+    }
+
+    private void ShowRecommendedActions()
+    {
+        Navigator.NavigateTo($"/recommendations");
     }
 }
