@@ -1,11 +1,13 @@
-﻿<nav class="bottom-nav">
+﻿@inject GeolocationService GeolocationService
+
+<nav class="bottom-nav">
     <ul class="nav-list">
         <li>
             <button @onclick="Home"> Home </button>
-        </li>      
+        </li>
         <li>
             <button @onclick="Visualizer"> Visualization </button>
-        </li>      
+        </li>
     </ul>
 </nav>
 
@@ -20,9 +22,15 @@
         NavigationManager.NavigateTo("/");
     }
 
-    private void Visualizer()
+    private async Task Visualizer()
     {
+        var location = await GeolocationService.GetLocationAsync();
+        TimeSpan duration = DateTime.Now - DateTime.Now.AddDays(-7);
+
         NavigationManager.NavigateTo("/visualizer");
+        var dateRange = $"{DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")}ZP{duration.Days}D";
+
+        NavigationManager.NavigateTo($"/visualizer/{dateRange}/{location.Latitude}/{location.Longitude}");
     }
 
     private void Recommendations()

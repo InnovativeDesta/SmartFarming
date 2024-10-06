@@ -30,7 +30,7 @@
 </div>
 
 @code {
-    private string selectedVegetationType = "Tomato";  // Default selection
+    private string selectedVegetationType = "Tomato"; 
     private double simulatedSoilMoisture;
     private bool simulatedFloodRisk;
     private bool simulatedDroughtRisk;
@@ -51,8 +51,6 @@
     {
         // Get simulated values and recommendations from the service
         var result = RecommendationService.SimulateAndGenerateRecommendation(selectedVegetationType);
-
-        // Extract the values and set them to the component's properties
         simulatedSoilMoisture = result.soilMoisture;
         simulatedFloodRisk = result.floodRisk;
         simulatedDroughtRisk = result.droughtRisk;

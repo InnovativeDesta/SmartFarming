@@ -18,7 +18,8 @@
 </div>
 
 @code {
-    [Parameter] public string daterange { get; set; }
+    [Parameter]
+    public string daterange { get; set; } = "2014-10-05T00:00:00Z--2024-10-05T00:00:00Z:PT1H";
     [Parameter] public double latitude { get; set; } = 63.096;  // NY's Latitude
     [Parameter] public double longitude { get; set; } = 21.615; // NY's Longitude
 
@@ -28,11 +29,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-    https://api.meteomatics.com/{startdate}--{enddate}/weather_variable/{lat},{lon}/json
-
-        apiEndpoint = $"https://api.meteomatics.com/{daterange}/volumetric_soil_water_-5cm:m3m3,volumetric_soil_water_-15cm:m3m3,volumetric_soil_water_-50cm:m3m3,volumetric_soil_water_-150cm:m3m3/{latitude},{longitude}/html?source=mix";
-        // Call the Meteomatics API
-        //https://api.meteomatics.com/{datetime}/t_2m:C/{lat},{lon}/json
+        apiEndpoint = $"http://api.meteomatics.com/{daterange}/t_2m:C/{latitude},{longitude}/html";
+        // apiEndpoint = $"https://api.meteomatics.com/{daterange}/volumetric_soil_water_-5cm:m3m3,volumetric_soil_water_-15cm:m3m3,volumetric_soil_water_-50cm:m3m3,volumetric_soil_water_-150cm:m3m3/{latitude},{longitude}/html?source=mix";        
         weatherData = await MeteomaticsApiService.GetWeatherDataAsync();
         iframeSrc = $"data:text/html;charset=utf-8,{Uri.EscapeDataString(weatherData)}";
     }
