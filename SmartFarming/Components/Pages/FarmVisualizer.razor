@@ -6,30 +6,30 @@
 
 <div>
     <h4>Meteomatics Space Data</h4>
-     @if (string.IsNullOrEmpty(weatherData))
+    @if (string.IsNullOrEmpty(weatherData))
     {
         <p>Loading visualization from Mateometics...</p>
     }
     else
     {
-        <iframe src="@iframeSrc" width="100%" height="500px" style="border:none;" /> 
+        <iframe src="@iframeSrc" class="responsive-iframe" frameborder="0" allowfullscreen></iframe>
     }
 </div>
 
 @code {
     [Parameter] public double latitude { get; set; } = 63.096;  // Vaasa's Latitude
     [Parameter] public double longitude { get; set; } = 21.615; // Vaasa's Longitude
-    
+
     private string weatherData;
-    string apiEndpoint; 
+    string apiEndpoint;
     private string iframeSrc;
 
     protected override async Task OnInitializedAsync()
     {
         apiEndpoint = "https://api.meteomatics.com/2024-10-05T00:00:00ZP5D:PT1H/volumetric_soil_water_-5cm:m3m3,volumetric_soil_water_-15cm:m3m3,volumetric_soil_water_-50cm:m3m3,volumetric_soil_water_-150cm:m3m3/47.412164,9.340652/html?source=mix";
-        // Call the Meteomatics API 
+        // Call the Meteomatics API
         //https://api.meteomatics.com/{datetime}/t_2m:C/{lat},{lon}/json
         weatherData = await MeteomaticsApiService.GetWeatherDataAsync();
-                iframeSrc = $"data:text/html;charset=utf-8,{Uri.EscapeDataString(weatherData)}"; 
-    }    
+        iframeSrc = $"data:text/html;charset=utf-8,{Uri.EscapeDataString(weatherData)}";
+    }
 }

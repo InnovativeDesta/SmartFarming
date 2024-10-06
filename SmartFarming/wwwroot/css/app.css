@@ -161,7 +161,7 @@ h1:focus {
     width: 100%;
     font-size: 16px;
     color: white;
-    background-color: #656464;
+    background-color: royalblue;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -186,3 +186,8 @@ h1:focus {
     margin-top: 20px;
 }
 
+.responsive-iframe {
+    width: 100%;
+    height: calc(100vh - 60px); /* Adjust as needed */
+    border: none; /* Optional: Remove the border */
+}
