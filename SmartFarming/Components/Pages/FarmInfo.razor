@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject GeolocationService GeolocationService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@using Services
+
+<h4>Farm Information</h4>
+
+<div class="form-container">
+    <label for="vegetation">Vegetation Type:</label>
+    <select class="form-dropdown" @bind="farmDetails.VegetationType">
+        <option value="Tomato">Tomato</option>
+        <option value="Lettuce">Lettuce</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Corn">Corn</option>
+        <option value="Rice">Rice</option>
+        <option value="Apple">Apple</option>
+    </select>
+    <div>
+        <button class="form-button" @onclick="GetLocation">Get Current Location</button>
+    </div>
+</div>
+
+
+<div>
+    <p>Farm Location: @(farmDetails.Location ?? " not detected yet")</p>
+
+    <!-- The div where the map will be rendered -->
+    <div id="map"></div>
+
+</div>
+
+@code {
+    private FarmDetails farmDetails = new FarmDetails();
+    private Xamarin.Essentials.Location location;
+     
+    protected override async Task OnAfterRenderAsync(bool firstRender=true)
+    {
+        await GetLocation();
+    }
+
+    private async Task GetLocation()
+    {
+        location = await GeolocationService.GetLocationAsync();
+
+        if (location != null)
+        {
+            farmDetails.Location = $"{location.Latitude}, {location.Longitude}";
+        }
+        else
+        {
+            farmDetails.Location = "Location not available";
+        }
+
+        await ShowInMap();
+    }
+
+    private async Task ShowInMap()
+    {
+        // Initialize the map with the provided latitude and longitude
+        await JS.InvokeVoidAsync("initializeLeafletMap", location.Latitude, location.Longitude);
+    }
+}

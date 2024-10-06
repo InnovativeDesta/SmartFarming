@@ -1,0 +1,37 @@
+﻿<nav class="bottom-nav">
+    <ul class="nav-list">
+        <li>
+            <button @onclick="Home"> Home </button>
+        </li>      
+        <li>
+            <button @onclick="Visualizer"> Visualization </button>
+        </li>
+        <li>
+            <button @onclick="Recommendations"> Recommendations</button>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    private void Home()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void FarmInfo()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void Visualizer()
+    {
+        NavigationManager.NavigateTo("/farm_visualizer");
+    }
+
+    private void Recommendations()
+    {
+        NavigationManager.NavigateTo("/recommendations");
+    }
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+}

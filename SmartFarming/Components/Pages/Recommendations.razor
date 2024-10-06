@@ -1,0 +1,58 @@
+﻿@page "/recommendations"
+@inject GeolocationService GeolocationService
+@inject SmartFarming.Services.Recommendation RecommendationService
+
+<h4>Recommendations</h4>
+
+<div class="form-container">
+    <select class="form-dropdown" @onchange ="GetSimulatedRecommendations">
+        <option value="Tomato">Tomato</option>
+        <option value="Lettuce">Lettuce</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Corn">Corn</option>
+        <option value="Rice">Rice</option>
+        <option value="Apple">Apple</option>
+    </select>
+    <button class="btn btn-primary" @onclick="GetUptoDateSimulatedRecommendations">Upto-Date Recommendations</button>
+</div>
+
+<div class="form-container">
+    <h4>Environmental Data:</h4>
+    <p>Soil Moisture: @simulatedSoilMoisture</p>
+    <p>Flood Risk: @(simulatedFloodRisk ? "Yes" : "No")</p>
+    <p>Drought Risk: @(simulatedDroughtRisk ? "Yes" : "No")</p>
+
+    <h4>Recommendations:</h4>
+    <p>@recommendationMessage</p>
+</div>
+
+@code {
+    private string selectedVegetationType = "Tomato";  // Default selection
+    private double simulatedSoilMoisture;
+    private bool simulatedFloodRisk;
+    private bool simulatedDroughtRisk;
+    private string recommendationMessage = "";
+
+    protected override void OnInitialized()
+    {        
+        GetUptoDateSimulatedRecommendations();
+    }
+
+    private async Task GetSimulatedRecommendations(ChangeEventArgs e)
+    {
+        selectedVegetationType = e.Value.ToString();
+        GetUptoDateSimulatedRecommendations();
+    }
+
+    private void GetUptoDateSimulatedRecommendations()
+    {
+        // Get simulated values and recommendations from the service
+        var result = RecommendationService.SimulateAndGenerateRecommendation(selectedVegetationType);
+
+        // Extract the values and set them to the component's properties
+        simulatedSoilMoisture = result.soilMoisture;
+        simulatedFloodRisk = result.floodRisk;
+        simulatedDroughtRisk = result.droughtRisk;
+        recommendationMessage = result.message;
+    }
+}
